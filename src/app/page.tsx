@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import PostList from "./components/PostList";
+import { NextPage } from "next";
 
 export interface Post {
   id: number;
@@ -11,7 +12,7 @@ export interface Post {
   content: string;
 }
 
-const Home: React.FC = () => {
+const Home: NextPage = () => {
   const [posts, setPosts] = useState<Post[]>([]);
 
   useEffect(() => {

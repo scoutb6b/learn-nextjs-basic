@@ -1,4 +1,5 @@
 "use client";
+import { NextPage } from "next";
 import { SubmitHandler, useForm } from "react-hook-form";
 
 interface SubmitData {
@@ -7,7 +8,7 @@ interface SubmitData {
   content: string;
 }
 
-const ContactPage = () => {
+const ContactPage: NextPage = () => {
   const {
     register,
     handleSubmit,

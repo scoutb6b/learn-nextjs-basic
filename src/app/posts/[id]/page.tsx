@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import Image from "next/image";
 import { useParams } from "next/navigation";
+import { NextPage } from "next";
 
 interface PostData {
   thumbnailUrl: string;
@@ -12,7 +13,7 @@ interface PostData {
   content: string;
 }
 
-const PostPage: React.FC = () => {
+const PostPage: NextPage = () => {
   const { id } = useParams();
   const [post, setPost] = useState<PostData | null>(null);
   const dateFormat = (date: Date) => {
