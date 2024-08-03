@@ -3,28 +3,22 @@
 import { useEffect, useState } from "react";
 import PostList from "./components/PostList";
 import { NextPage } from "next";
-
-export interface Post {
-  id: number;
-  categories: string[];
-  createdAt: Date;
-  title: string;
-  content: string;
-}
+import { MicroCmsPost } from "@/_types/MicroCmsPost";
 
 const Home: NextPage = () => {
-  const [posts, setPosts] = useState<Post[]>([]);
+  const [posts, setPosts] = useState<MicroCmsPost[]>([]);
 
   useEffect(() => {
-    const getAllPosts = async () => {
-      const res = await fetch(
-        "https://1hmfpsvto6.execute-api.ap-northeast-1.amazonaws.com/dev/posts"
-      );
-      const data = await res.json();
-      setPosts(data.posts);
+    const fetcher = async () => {
+      const res = await fetch("https://wzroknxrgd.microcms.io/api/v1/blogs", {
+        headers: {
+          "X-MICROCMS-API-KEY": process.env.NEXT_PUBLIC_API_KEY as string,
+        },
+      });
+      const { contents } = await res.json();
+      setPosts(contents);
     };
-
-    getAllPosts();
+    fetcher();
   }, []);
   return (
     <div className="mt-8">

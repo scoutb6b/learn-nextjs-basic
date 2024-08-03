@@ -2,10 +2,10 @@
 
 import { format } from "date-fns";
 import Link from "next/link";
-import { Post } from "../page";
+import { MicroCmsPost } from "@/_types/MicroCmsPost";
 
 interface PostProps {
-  item: Post;
+  item: MicroCmsPost;
 }
 
 const PostList: React.FC<PostProps> = ({ item }) => {
@@ -26,7 +26,7 @@ const PostList: React.FC<PostProps> = ({ item }) => {
               key={index}
               className="border border-blue-300 rounded-md px-2 py-1 text-blue-500 "
             >
-              {category}
+              {category.name}
             </p>
           ))}
         </div>
