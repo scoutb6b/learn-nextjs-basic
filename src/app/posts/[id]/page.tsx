@@ -4,39 +4,43 @@ import { format } from "date-fns";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import { NextPage } from "next";
-
-interface PostData {
-  thumbnailUrl: string;
-  createdAt: Date;
-  categories: string[];
-  title: string;
-  content: string;
-}
+import { MicroCmsPost } from "@/_types/MicroCmsPost";
 
 const PostPage: NextPage = () => {
   const { id } = useParams();
-  const [post, setPost] = useState<PostData | null>(null);
+  const [post, setPost] = useState<MicroCmsPost | null>(null);
+  const [loading, setLoading] = useState(false);
   const dateFormat = (date: Date) => {
     return format(new Date(date), "yyyy-MM-dd");
   };
   useEffect(() => {
-    const getPost = async () => {
+    const fetcher = async () => {
+      setLoading(true);
       const res = await fetch(
-        `https://1hmfpsvto6.execute-api.ap-northeast-1.amazonaws.com/dev/posts/${id}`
+        `https://wzroknxrgd.microcms.io/api/v1/blogs/${id}`,
+        {
+          headers: {
+            "X-MICROCMS-API-KEY": process.env.NEXT_PUBLIC_API_KEY as string,
+          },
+        }
       );
       const data = await res.json();
-      setPost(data.post);
+      setLoading(false);
+      setPost(data);
     };
-    getPost();
+    fetcher();
   }, []);
-  if (post === null) {
-    return <div>loading...</div>;
+  if (loading) {
+    return <div>読み込み中...</div>;
   }
-  const { thumbnailUrl, createdAt, categories, title, content } = post;
+  if (post === null) {
+    return <div>記事が見つかりません</div>;
+  }
+  const { thumbnail, createdAt, categories, title, content } = post;
   return (
     <div className="mx-auto w-3/4">
       <Image
-        src={thumbnailUrl}
+        src={thumbnail.url}
         width={800}
         height={400}
         alt=""
@@ -51,7 +55,7 @@ const PostPage: NextPage = () => {
                 key={index}
                 className="border border-blue-300 rounded-md px-2 py-1 text-blue-500"
               >
-                {item}
+                {item.name}
               </p>
             ))}
           </div>
