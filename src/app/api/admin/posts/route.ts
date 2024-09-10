@@ -1,15 +1,16 @@
+import { UpdatePostBody } from "@/app/_types/request/posts";
 import { PrismaClient } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
 const prisma = new PrismaClient();
 
 // 記事作成のリクエストボディの型
-interface CreatePostRequestBody {
-  title: string;
-  content: string;
-  categories: { id: number }[];
-  thumbnailUrl: string;
-}
+// interface CreatePostRequestBody {
+//   title: string;
+//   content: string;
+//   categories: { id: number }[];
+//   thumbnailUrl: string;
+// }
 
 // POSTという命名にすることで、POSTリクエストの時にこの関数が呼ばれる
 export const POST = async (req: NextRequest, context: any) => {
@@ -18,8 +19,7 @@ export const POST = async (req: NextRequest, context: any) => {
     const body = await req.json();
 
     // bodyの中からtitle, content, categories, thumbnailUrlを取り出す
-    const { title, content, categories, thumbnailUrl }: CreatePostRequestBody =
-      body;
+    const { title, content, categories, thumbnailUrl }: UpdatePostBody = body;
 
     // 投稿をDBに生成
     const data = await prisma.post.create({
@@ -35,8 +35,8 @@ export const POST = async (req: NextRequest, context: any) => {
     for (const category of categories) {
       await prisma.postCategory.create({
         data: {
-          categoryId: category.id,
           postId: data.id,
+          categoryId: category.id,
         },
       });
     }

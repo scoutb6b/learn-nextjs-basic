@@ -18,7 +18,6 @@ const PostListpage: NextPage = () => {
           `${process.env.NEXT_PUBLIC_API_URL}admin/posts`
         );
         const { posts } = await res.json();
-        console.log(posts);
 
         setPposts(posts);
       } catch (error) {

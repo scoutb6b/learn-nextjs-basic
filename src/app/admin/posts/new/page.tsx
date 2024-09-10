@@ -7,7 +7,7 @@ import { useState } from "react";
 const CreatePostPage = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState<{ id: number }[]>([]);
   const [thumbnailUrl, setThumbnailUrl] = useState("https://abc.png");
   const router = useRouter();
 
@@ -38,11 +38,16 @@ const CreatePostPage = () => {
       console.error("post create error");
     }
   };
+
+  const selectCatetories = (categoryId: number) => {
+    setCategories([{ id: categoryId }]);
+    console.log(categoryId);
+  };
   return (
     <div className="mt-10 p-4 w-full">
       <h1 className="text-2xl font-bold text-center">投稿新規作成</h1>
       <div className="mt-10">
-        <form action="" className="flex flex-col gap-10 ">
+        <form onSubmit={postCreate} className="flex flex-col gap-10 ">
           <label htmlFor="">
             タイトル
             <input
@@ -72,11 +77,10 @@ const CreatePostPage = () => {
           </label>
           <label htmlFor="">
             カテゴリー
-            <SelectCategory setCategories={setCategories} />
+            <SelectCategory setCategories={selectCatetories} />
           </label>
           <button
             type="submit"
-            onClick={postCreate}
             className=" bg-green-500 px-4 py-2 mt-4 w-1/4 mx-auto text-white rounded-md"
           >
             追加する

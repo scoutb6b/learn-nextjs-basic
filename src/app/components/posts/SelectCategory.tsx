@@ -23,12 +23,12 @@ const SelectCategory = ({ setCategories }) => {
     <div>
       <select
         className="border-2 border-gray-500 rounded-md w-full p-2"
-        onChange={(e) => setCategories([e.target.value])}
+        onChange={(e) => setCategories(parseInt(e.target.value))}
       >
         <option value=""></option>
         {category.map((item) => {
           return (
-            <option value={item.name} key={item.id}>
+            <option value={item.id} key={item.id}>
               {item.name}
             </option>
           );

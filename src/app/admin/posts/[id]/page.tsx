@@ -9,7 +9,7 @@ import { FormEventHandler, useEffect, useState } from "react";
 const PostPage = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState<{ id: number }[]>([]);
   const [thumbnailUrl, setThumbnailUrl] = useState("https://abc.png");
   const router = useRouter();
 
@@ -24,9 +24,12 @@ const PostPage = () => {
         console.log(data);
         const { title, content, thumbnailUrl, categories }: UpdatePostBody =
           data.post;
+        console.log(data.post);
+
         setTitle(title);
         setContent(content);
         setThumbnailUrl(thumbnailUrl);
+        setCategories(categories);
       } catch (error) {
         console.error("PUT post error");
       }
