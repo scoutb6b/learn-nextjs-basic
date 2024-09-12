@@ -1,9 +1,10 @@
 "use client";
-import { useState } from "react";
+import { FormEventHandler, useState } from "react";
 
 const CategoryCreatePage: React.FC = () => {
   const [category, setCategory] = useState("");
-  const categoryCreate = async () => {
+  const categoryCreate: FormEventHandler<HTMLFormElement> = async (e) => {
+    e.preventDefault();
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}admin/categories`,
       {
@@ -21,7 +22,7 @@ const CategoryCreatePage: React.FC = () => {
   return (
     <div className="mt-10 p-4 w-full">
       <h1 className="text-2xl font-bold text-center">カテゴリー新規作成</h1>
-      <div className="">
+      <form onSubmit={categoryCreate}>
         <label htmlFor="">
           カテゴリー名
           <input
@@ -32,13 +33,13 @@ const CategoryCreatePage: React.FC = () => {
             className="border-2 border-gray-500 rounded-md w-full mt-2 p-2"
           />
         </label>
-      </div>
-      <button
-        className="px-8 py-2 bg-green-500 rounded-lg text-white mt-4"
-        onClick={categoryCreate}
-      >
-        作成する
-      </button>
+        <button
+          type="submit"
+          className="px-8 py-2 bg-green-500 rounded-lg text-white mt-4"
+        >
+          作成する
+        </button>
+      </form>
     </div>
   );
 };
