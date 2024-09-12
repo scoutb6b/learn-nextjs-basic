@@ -6,6 +6,8 @@ import { useEffect, useState } from "react";
 
 const CategoriesPage: NextPage = () => {
   const [category, setCategory] = useState<Category[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+
   useEffect(() => {
     const categoryData = async () => {
       try {
@@ -14,12 +16,20 @@ const CategoriesPage: NextPage = () => {
         );
         const { categories } = await res.json();
         setCategory(categories);
+        setLoading(true);
       } catch (error) {
         console.error("GET error");
       }
     };
     categoryData();
   }, []);
+  if (!loading) {
+    return (
+      <div className="h-full text-center content-center">
+        <p className="text-xl font-medium">読み込み中..</p>
+      </div>
+    );
+  }
   return (
     <div className="mt-10 w-full px-4">
       <div className="flex justify-between items-center">

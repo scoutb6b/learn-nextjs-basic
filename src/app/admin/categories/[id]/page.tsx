@@ -7,6 +7,8 @@ import { FormEventHandler, useEffect, useState } from "react";
 
 const CategoryEditPage = () => {
   const [category, setCategory] = useState("");
+  const [loading, setLoading] = useState<boolean>(false);
+
   const { id } = useParams();
   const router = useRouter();
 
@@ -19,6 +21,7 @@ const CategoryEditPage = () => {
         const data = await res.json();
         console.log(data);
         setCategory(data.category.name);
+        setLoading(true);
       } catch (error) {
         console.error("Category Get Error");
       }
@@ -52,7 +55,13 @@ const CategoryEditPage = () => {
     alert("カテゴリーを削除しました");
     router.push("/admin/categories");
   };
-
+  if (!loading) {
+    return (
+      <div className=" w-full text-center content-center">
+        <p className="text-xl font-medium">読み込み中..</p>
+      </div>
+    );
+  }
   return (
     <form onSubmit={handleSave} className="mt-10 p-4 w-full">
       <h1 className="text-2xl font-bold text-center">カテゴリー編集</h1>

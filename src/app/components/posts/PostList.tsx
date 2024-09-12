@@ -2,12 +2,13 @@
 
 import { NextPage } from "next";
 import { useEffect, useState } from "react";
-import { Posts } from "@/app/_types/request/posts";
+import { GetPosts } from "@/app/_types/request/posts";
 import { format } from "date-fns";
 import Link from "next/link";
 
 const PostListpage: NextPage = () => {
-  const [posts, setPposts] = useState<Posts[]>([]);
+  const [posts, setPposts] = useState<GetPosts[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
   const dateFormat = (date: Date) => {
     return format(new Date(date), "yyyy/MM/dd");
   };
@@ -20,12 +21,21 @@ const PostListpage: NextPage = () => {
         const { posts } = await res.json();
 
         setPposts(posts);
+        setLoading(true);
       } catch (error) {
         console.error("posts GET Error");
       }
     };
     postData();
   }, []);
+
+  if (!loading) {
+    return (
+      <div className="h-full text-center content-center">
+        <p className="text-xl font-medium">読み込み中..</p>
+      </div>
+    );
+  }
   return (
     <div className="mt-10">
       {posts.map((post) => {
