@@ -1,6 +1,7 @@
 "use client";
 import { Category } from "@/app/_types/request/category";
 import { UpdatePostBody } from "@/app/_types/request/posts";
+import PostForm from "@/app/components/posts/PostForm";
 import { useRouter } from "next/navigation";
 import { FormEventHandler, useEffect, useState } from "react";
 
@@ -45,9 +46,7 @@ const CreatePostPage = () => {
       const resCategory = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}admin/categories`
       );
-      console.log(resCategory);
       const { categories } = await resCategory.json();
-      console.log(categories);
 
       setSelectCategory(categories);
     };
@@ -62,61 +61,25 @@ const CreatePostPage = () => {
     <div className="mt-10 p-4 w-full">
       <h1 className="text-2xl font-bold text-center">投稿新規作成</h1>
       <div className="mt-10">
-        <form onSubmit={postCreate} className="flex flex-col gap-10 ">
-          <label htmlFor="">
-            タイトル
-            <input
-              type="text"
-              className="border-2 border-gray-500 rounded-md w-full p-2"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-            />
-          </label>
-          <label htmlFor="">
-            本文
-            <input
-              type="text"
-              className="border-2 border-gray-500 rounded-md w-full p-2"
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-            />
-          </label>
-          <label htmlFor="">
-            サムネイルURL
-            <input
-              type="text"
-              className="border-2 border-gray-500 rounded-md w-full p-2"
-              value={thumbnailUrl}
-              onChange={(e) => setThumbnailUrl(e.target.value)}
-            />
-          </label>
-          <label htmlFor="">
-            カテゴリー
-            <select
-              className="border-2 border-gray-500 rounded-md w-full p-2"
-              // value={categories.length > 0 ? categories[0].id : ""}
-              onChange={(e) =>
-                setCategories([{ id: parseInt(e.target.value) }])
-              }
-            >
-              <option value=""></option>
-              {selectCategory.map((item) => {
-                return (
-                  <option value={item.id} key={item.id}>
-                    {item.name}
-                  </option>
-                );
-              })}
-            </select>
-            {/* <SelectCategory setCategories={selectCatetories} /> */}
-          </label>
+        <PostForm
+          onSubmit={postCreate}
+          title={title}
+          content={content}
+          thumbnailUrl={thumbnailUrl}
+          selectCategory={selectCategory}
+          categories={categories}
+          setTitle={setTitle}
+          setContent={setContent}
+          setThumbnailUrl={setThumbnailUrl}
+          setCategories={setCategories}
+        >
           <button
             type="submit"
             className=" bg-green-500 px-4 py-2 mt-4 w-1/4 mx-auto text-white rounded-md"
           >
             追加する
           </button>
-        </form>
+        </PostForm>
       </div>
     </div>
   );

@@ -3,6 +3,7 @@ import { Category } from "@/app/_types/request/category";
 import { GetPosts, UpdatePostBody } from "@/app/_types/request/posts";
 import PostDelBtn from "@/app/components/posts/PostDelBtn";
 import PostEditBtn from "@/app/components/posts/PostEditBtn";
+import PostForm from "@/app/components/posts/PostForm";
 import { useParams, useRouter } from "next/navigation";
 import { FormEventHandler, useEffect, useState } from "react";
 
@@ -37,7 +38,6 @@ const PostPage = () => {
         setCategories(categoryId);
 
         const { categories } = await resCategory.json();
-        console.log(categories);
 
         setSelectCategory(categories);
         setLoading(true);
@@ -85,62 +85,24 @@ const PostPage = () => {
 
   return (
     <div className="mt-10 px-10 py-4 w-full mx-auto">
-      <form onSubmit={handleSave} className="flex flex-col gap-10 ">
-        <h1 className="text-2xl font-bold text-center">記事編集</h1>
-
-        <label htmlFor="">
-          タイトル
-          <input
-            type="text"
-            className="border-2 border-gray-500 rounded-md w-full p-2"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
-        </label>
-        <label htmlFor="">
-          本文
-          <input
-            type="text"
-            className="border-2 border-gray-500 rounded-md w-full p-2"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-          />
-        </label>
-        <label htmlFor="">
-          サムネイルURL
-          <input
-            type="text"
-            className="border-2 border-gray-500 rounded-md w-full p-2"
-            value={thumbnailUrl}
-            onChange={(e) => setThumbnailUrl(e.target.value)}
-          />
-        </label>
-        <label htmlFor="">
-          カテゴリー
-          <select
-            className="border-2 border-gray-500 rounded-md w-full p-2"
-            value={categories.length > 0 ? categories[0].id : ""}
-            onChange={(e) => setCategories([{ id: parseInt(e.target.value) }])}
-          >
-            <option value=""></option>
-            {selectCategory.map((item) => {
-              return (
-                <option value={item.id} key={item.id}>
-                  {item.name}
-                </option>
-              );
-            })}
-          </select>
-          {/* <SelectCategory
-            setCategories={setCategories}
-            categories={categories}
-          /> */}
-        </label>
+      <h1 className="text-2xl font-bold text-center">記事編集</h1>
+      <PostForm
+        onSubmit={handleSave}
+        title={title}
+        content={content}
+        thumbnailUrl={thumbnailUrl}
+        selectCategory={selectCategory}
+        categories={categories}
+        setTitle={setTitle}
+        setContent={setContent}
+        setThumbnailUrl={setThumbnailUrl}
+        setCategories={setCategories}
+      >
         <div className="flex gap-5">
           <PostEditBtn />
           <PostDelBtn handleDel={handleDel} />
         </div>
-      </form>
+      </PostForm>
     </div>
   );
 };
