@@ -36,7 +36,7 @@ const PostForm: React.FC<FormProps> = ({
   setSelectCategories,
   children,
 }) => {
-  const [allCategory, setAllCategory] = useState<Category[]>([]);
+  const [allCategories, setAllCategories] = useState<Category[]>([]);
   useEffect(() => {
     const select = async () => {
       const resCategory = await fetch(
@@ -44,7 +44,7 @@ const PostForm: React.FC<FormProps> = ({
       );
       const { categories } = await resCategory.json();
 
-      setAllCategory(categories);
+      setAllCategories(categories);
     };
     select();
   }, []);
@@ -95,7 +95,7 @@ const PostForm: React.FC<FormProps> = ({
         <p>カテゴリー</p>
 
         <div className="mt-4">
-          {allCategory.map((item) => {
+          {allCategories.map((item) => {
             return (
               <label
                 htmlFor={item.name}
