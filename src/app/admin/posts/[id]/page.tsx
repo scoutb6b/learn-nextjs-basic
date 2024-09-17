@@ -1,5 +1,4 @@
 "use client";
-import { Category } from "@/app/_types/request/category";
 import { GetPosts, UpdatePostBody } from "@/app/_types/request/posts";
 import PostDelBtn from "@/app/components/posts/PostDelBtn";
 import PostEditBtn from "@/app/components/posts/PostEditBtn";
@@ -10,8 +9,9 @@ import { FormEventHandler, useEffect, useState } from "react";
 const PostPage = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [categories, setCategories] = useState<{ id: number }[]>([]);
-  const [selectCategory, setSelectCategory] = useState<Category[]>([]);
+  const [selectCategories, setSelectCategories] = useState<{ id: number }[]>(
+    []
+  );
   const [thumbnailUrl, setThumbnailUrl] = useState("https://abc.png");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -23,37 +23,33 @@ const PostPage = () => {
         const resPost = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/admin/posts/${id}`
         );
-        const resCategory = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}admin/categories`
-        );
+
         const data = await resPost.json();
         const { title, content, thumbnailUrl, postCategories }: GetPosts =
           data.post;
         setTitle(title);
         setContent(content);
         setThumbnailUrl(thumbnailUrl);
-        const categoryId = postCategories.map((item) => ({
-          id: item.category.id,
-        }));
-        setCategories(categoryId);
+        setSelectCategories(
+          postCategories.map((item) => ({
+            id: item.category.id,
+          }))
+        );
 
-        const { categories } = await resCategory.json();
-
-        setSelectCategory(categories);
         setLoading(true);
       } catch (error) {
         console.error("PUT post error");
       }
     };
     getPosts();
-  }, []);
+  }, [id]);
 
   const handleSave: FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
     const postBody: UpdatePostBody = {
       title,
       content,
-      categories,
+      categories: selectCategories,
       thumbnailUrl,
     };
     await fetch(`${process.env.NEXT_PUBLIC_API_URL}admin/posts/${id}`, {
@@ -91,12 +87,11 @@ const PostPage = () => {
         title={title}
         content={content}
         thumbnailUrl={thumbnailUrl}
-        selectCategory={selectCategory}
-        categories={categories}
+        selectCategories={selectCategories}
         setTitle={setTitle}
         setContent={setContent}
         setThumbnailUrl={setThumbnailUrl}
-        setCategories={setCategories}
+        setSelectCategories={setSelectCategories}
       >
         <div className="flex gap-5">
           <PostEditBtn />

@@ -1,5 +1,11 @@
 import { Category } from "@/app/_types/request/category";
-import { ChangeEventHandler, FormEventHandler, ReactNode } from "react";
+import {
+  ChangeEventHandler,
+  FormEventHandler,
+  ReactNode,
+  useEffect,
+  useState,
+} from "react";
 
 type FormProps = {
   onSubmit: FormEventHandler<HTMLFormElement>;
@@ -9,13 +15,12 @@ type FormProps = {
   setContent: (content: string) => void;
   thumbnailUrl: string;
   setThumbnailUrl: (thumbnailUrl: string) => void;
-  categories: { id: number }[];
-  setCategories: (
-    categories: {
+  selectCategories: { id: number }[];
+  setSelectCategories: (
+    selectCategories: {
       id: number;
     }[]
   ) => void;
-  selectCategory: Category[];
   children: ReactNode;
 };
 
@@ -27,20 +32,32 @@ const PostForm: React.FC<FormProps> = ({
   setContent,
   thumbnailUrl,
   setThumbnailUrl,
-  categories,
-  setCategories,
-  selectCategory,
+  selectCategories,
+  setSelectCategories,
   children,
 }) => {
-  console.log(selectCategory);
-  console.log(categories);
+  const [allCategory, setAllCategory] = useState<Category[]>([]);
+  useEffect(() => {
+    const select = async () => {
+      const resCategory = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}admin/categories`
+      );
+      const { categories } = await resCategory.json();
+
+      setAllCategory(categories);
+    };
+    select();
+  }, []);
 
   const handleCheck: ChangeEventHandler<HTMLInputElement> = (e) => {
     if (e.target.checked) {
-      setCategories([...categories, { id: parseInt(e.target.value) }]);
+      setSelectCategories([
+        ...selectCategories,
+        { id: parseInt(e.target.value) },
+      ]);
     } else {
-      setCategories(
-        categories.filter((c) => c.id !== parseInt(e.target.value))
+      setSelectCategories(
+        selectCategories.filter((c) => c.id !== parseInt(e.target.value))
       );
     }
   };
@@ -78,19 +95,19 @@ const PostForm: React.FC<FormProps> = ({
         <p>カテゴリー</p>
 
         <div className="mt-4">
-          {selectCategory.map((item) => {
+          {allCategory.map((item) => {
             return (
               <label
                 htmlFor={item.name}
                 className="inline-flex items-center flex-row gap-1 mr-6"
+                key={item.id}
               >
                 <input
                   className="size-4"
                   type="checkbox"
-                  key={item.id}
                   value={item.id}
                   id={item.name}
-                  checked={categories.some((c) => c.id === item.id)}
+                  checked={selectCategories.some((c) => c.id === item.id)}
                   onChange={handleCheck}
                 />
                 {item.name}

@@ -8,9 +8,9 @@ import { FormEventHandler, useEffect, useState } from "react";
 const CreatePostPage = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [categories, setCategories] = useState<{ id: number }[]>([]);
-  const [selectCategory, setSelectCategory] = useState<Category[]>([]);
-
+  const [selectCategories, setSelectCategories] = useState<{ id: number }[]>(
+    []
+  );
   const [thumbnailUrl, setThumbnailUrl] = useState("https://abc.png");
   const router = useRouter();
 
@@ -20,7 +20,7 @@ const CreatePostPage = () => {
       const postBody: UpdatePostBody = {
         title,
         content,
-        categories,
+        categories: selectCategories,
         thumbnailUrl,
       };
       const resPost = await fetch(
@@ -41,22 +41,7 @@ const CreatePostPage = () => {
       console.error("post create error");
     }
   };
-  useEffect(() => {
-    const select = async () => {
-      const resCategory = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}admin/categories`
-      );
-      const { categories } = await resCategory.json();
 
-      setSelectCategory(categories);
-    };
-    select();
-  }, []);
-
-  // const selectCatetories = (categoryId: number) => {
-  //   setCategories([{ id: categoryId }]);
-  //   console.log(categoryId);
-  // };
   return (
     <div className="mt-10 p-4 w-full">
       <h1 className="text-2xl font-bold text-center">投稿新規作成</h1>
@@ -66,12 +51,11 @@ const CreatePostPage = () => {
           title={title}
           content={content}
           thumbnailUrl={thumbnailUrl}
-          selectCategory={selectCategory}
-          categories={categories}
+          selectCategories={selectCategories}
           setTitle={setTitle}
           setContent={setContent}
           setThumbnailUrl={setThumbnailUrl}
-          setCategories={setCategories}
+          setSelectCategories={setSelectCategories}
         >
           <button
             type="submit"
