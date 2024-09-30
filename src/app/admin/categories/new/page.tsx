@@ -1,9 +1,14 @@
 "use client";
+import { useSupabaseSession } from "@/app/_hooks/useSupabaseSession";
 import { FormEventHandler, useState } from "react";
 
 const CategoryCreatePage: React.FC = () => {
   const [category, setCategory] = useState("");
+
+  const { token } = useSupabaseSession();
+
   const categoryCreate: FormEventHandler<HTMLFormElement> = async (e) => {
+    if (!token) return;
     e.preventDefault();
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}admin/categories`,
@@ -11,6 +16,7 @@ const CategoryCreatePage: React.FC = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: token,
         },
         body: JSON.stringify({ name: category }),
       }

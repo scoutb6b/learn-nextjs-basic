@@ -1,4 +1,5 @@
 "use client";
+import { useSupabaseSession } from "@/app/_hooks/useSupabaseSession";
 import { GetPosts, UpdatePostBody } from "@/app/_types/request/posts";
 import PostDelBtn from "@/app/components/posts/PostDelBtn";
 import PostEditBtn from "@/app/components/posts/PostEditBtn";
@@ -12,24 +13,36 @@ const PostPage = () => {
   const [selectCategories, setSelectCategories] = useState<{ id: number }[]>(
     []
   );
-  const [thumbnailUrl, setThumbnailUrl] = useState("https://abc.png");
+  const [thumbnailImageKey, setThumbnailImageKey] = useState("");
+
+  // const [thumbnailUrl, setThumbnailUrl] = useState("https://abc.png");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { id } = useParams();
 
+  const { token } = useSupabaseSession();
+
   useEffect(() => {
+    if (!token) return;
     const getPosts = async () => {
       try {
         const resPost = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/admin/posts/${id}`
+          `${process.env.NEXT_PUBLIC_API_URL}/admin/posts/${id}`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: token,
+            },
+          }
         );
 
         const data = await resPost.json();
-        const { title, content, thumbnailUrl, postCategories }: GetPosts =
+        const { title, content, thumbnailImageKey, postCategories }: GetPosts =
           data.post;
         setTitle(title);
         setContent(content);
-        setThumbnailUrl(thumbnailUrl);
+        // setThumbnailUrl(thumbnailUrl);
+        setThumbnailImageKey(thumbnailImageKey);
         setSelectCategories(
           postCategories.map((item) => ({
             id: item.category.id,
@@ -42,20 +55,23 @@ const PostPage = () => {
       }
     };
     getPosts();
-  }, [id]);
+  }, [token]);
 
   const handleSave: FormEventHandler<HTMLFormElement> = async (e) => {
+    if (!token) return;
+
     e.preventDefault();
     const postBody: UpdatePostBody = {
       title,
       content,
       categories: selectCategories,
-      thumbnailUrl,
+      thumbnailImageKey,
     };
     await fetch(`${process.env.NEXT_PUBLIC_API_URL}admin/posts/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
+        Authorization: token,
       },
       body: JSON.stringify(postBody),
     });
@@ -64,9 +80,15 @@ const PostPage = () => {
   };
 
   const handleDel = async () => {
+    if (!token) return;
+
     if (!confirm("削除してもよろしいですか？")) return;
     await fetch(`${process.env.NEXT_PUBLIC_API_URL}admin/posts/${id}`, {
       method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: token,
+      },
     });
     alert("記事を削除しました");
     router.push("/admin/posts");
@@ -86,11 +108,13 @@ const PostPage = () => {
         onSubmit={handleSave}
         title={title}
         content={content}
-        thumbnailUrl={thumbnailUrl}
+        // thumbnailUrl={thumbnailUrl}
+        thumbnailImageKey={thumbnailImageKey}
         selectCategories={selectCategories}
         setTitle={setTitle}
         setContent={setContent}
-        setThumbnailUrl={setThumbnailUrl}
+        // setThumbnailUrl={setThumbnailUrl}
+        setThumbnailImageKey={setThumbnailImageKey}
         setSelectCategories={setSelectCategories}
       >
         <div className="flex gap-5">

@@ -1,4 +1,5 @@
 import { UpdatePostBody } from "@/app/_types/request/posts";
+import { supabase } from "@/utils/supabase";
 import { PrismaClient } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -14,19 +15,24 @@ const prisma = new PrismaClient();
 
 // POSTという命名にすることで、POSTリクエストの時にこの関数が呼ばれる
 export const POST = async (req: NextRequest, context: any) => {
+  const token = req.headers.get("Authorization") ?? "";
+  const { data, error } = await supabase.auth.getUser(token);
+  if (error)
+    return NextResponse.json({ message: error.message }, { status: 410 });
   try {
     // リクエストのbodyを取得
     const body = await req.json();
 
     // bodyの中からtitle, content, categories, thumbnailUrlを取り出す
-    const { title, content, categories, thumbnailUrl }: UpdatePostBody = body;
+    const { title, content, categories, thumbnailImageKey }: UpdatePostBody =
+      body;
 
     // 投稿をDBに生成
     const data = await prisma.post.create({
       data: {
         title,
         content,
-        thumbnailUrl,
+        thumbnailImageKey,
       },
     });
 
@@ -49,12 +55,16 @@ export const POST = async (req: NextRequest, context: any) => {
     });
   } catch (error) {
     if (error instanceof Error) {
-      return NextResponse.json({ status: error.message }, { status: 400 });
+      return NextResponse.json({ message: error.message }, { status: 400 });
     }
   }
 };
 
-export const GET = async (request: NextRequest) => {
+export const GET = async (req: NextRequest) => {
+  const token = req.headers.get("Authorization") ?? "";
+  const { error } = await supabase.auth.getUser(token);
+  if (error)
+    return NextResponse.json({ message: error.message }, { status: 400 });
   try {
     const posts = await prisma.post.findMany({
       include: {
@@ -77,6 +87,6 @@ export const GET = async (request: NextRequest) => {
     return NextResponse.json({ status: "OK", posts: posts }, { status: 200 });
   } catch (error) {
     if (error instanceof Error)
-      return NextResponse.json({ status: error.message }, { status: 400 });
+      return NextResponse.json({ message: error.message }, { status: 400 });
   }
 };

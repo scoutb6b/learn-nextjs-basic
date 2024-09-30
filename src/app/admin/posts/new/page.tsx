@@ -1,4 +1,5 @@
 "use client";
+import { useSupabaseSession } from "@/app/_hooks/useSupabaseSession";
 import { Category } from "@/app/_types/request/category";
 import { UpdatePostBody } from "@/app/_types/request/posts";
 import PostForm from "@/app/components/posts/PostForm";
@@ -11,17 +12,22 @@ const CreatePostPage = () => {
   const [selectCategories, setSelectCategories] = useState<{ id: number }[]>(
     []
   );
-  const [thumbnailUrl, setThumbnailUrl] = useState("https://abc.png");
+  const [thumbnailImageKey, setThumbnailImageKey] = useState("");
+
+  // const [thumbnailUrl, setThumbnailUrl] = useState("https://abc.png");
   const router = useRouter();
 
+  const { token } = useSupabaseSession();
+
   const postCreate: FormEventHandler<HTMLFormElement> = async (e) => {
+    if (!token) return;
     e.preventDefault();
     try {
       const postBody: UpdatePostBody = {
         title,
         content,
         categories: selectCategories,
-        thumbnailUrl,
+        thumbnailImageKey,
       };
       const resPost = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/admin/posts`,
@@ -29,13 +35,14 @@ const CreatePostPage = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: token,
           },
           body: JSON.stringify(postBody),
         }
       );
       const result = await resPost.json();
       console.log(result);
-
+      alert("記事を作成しました");
       router.push("/admin/posts");
     } catch (error) {
       console.error("post create error");
@@ -50,11 +57,13 @@ const CreatePostPage = () => {
           onSubmit={postCreate}
           title={title}
           content={content}
-          thumbnailUrl={thumbnailUrl}
+          // thumbnailUrl={thumbnailUrl}
+          thumbnailImageKey={thumbnailImageKey}
           selectCategories={selectCategories}
           setTitle={setTitle}
           setContent={setContent}
-          setThumbnailUrl={setThumbnailUrl}
+          // setThumbnailUrl={setThumbnailUrl}
+          setThumbnailImageKey={setThumbnailImageKey}
           setSelectCategories={setSelectCategories}
         >
           <button
