@@ -1,4 +1,5 @@
 import { CategoryProps } from "@/app/_types/request/category";
+import { supabase } from "@/utils/supabase";
 import { PrismaClient } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -8,6 +9,10 @@ export const GET = async (
   req: NextRequest,
   { params }: { params: { id: string } }
 ) => {
+  const token = req.headers.get("Authorization") ?? "";
+  const { error } = await supabase.auth.getUser(token);
+  if (error)
+    return NextResponse.json({ message: error.message }, { status: 400 });
   const { id } = params;
   try {
     const category = await prisma.category.findUnique({
@@ -26,6 +31,10 @@ export const PUT = async (
   req: NextRequest,
   { params }: { params: { id: string } }
 ) => {
+  const token = req.headers.get("Authorization") ?? "";
+  const { error } = await supabase.auth.getUser(token);
+  if (error)
+    return NextResponse.json({ message: error.message }, { status: 400 });
   const { id } = params;
   const { name }: CategoryProps = await req.json();
 
@@ -49,6 +58,10 @@ export const DELETE = async (
   req: NextRequest,
   { params }: { params: { id: string } }
 ) => {
+  const token = req.headers.get("Authorization") ?? "";
+  const { error } = await supabase.auth.getUser(token);
+  if (error)
+    return NextResponse.json({ message: error.message }, { status: 400 });
   const { id } = params;
   try {
     await prisma.category.delete({

@@ -2,7 +2,7 @@ export type GetPosts = {
   id: number;
   title: string;
   content: string;
-  thumbnailUrl: string;
+  thumbnailImageKey: string;
   createdAt: Date;
   postCategories: GetPostCategories[];
 };
@@ -23,5 +23,5 @@ export type UpdatePostBody = {
   title: string;
   content: string;
   categories: { id: number }[];
-  thumbnailUrl: string;
+  thumbnailImageKey: string;
 };

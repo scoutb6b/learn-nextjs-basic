@@ -1,3 +1,4 @@
+import { supabase } from "@/utils/supabase";
 import { PrismaClient } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -8,6 +9,10 @@ interface CreateCategoryRequestBody {
 const prisma = new PrismaClient();
 
 export const GET = async (req: NextRequest) => {
+  const token = req.headers.get("Authorization") ?? "";
+  const { error } = await supabase.auth.getUser(token);
+  if (error)
+    return NextResponse.json({ message: error.message }, { status: 400 });
   try {
     const categories = await prisma.category.findMany({
       orderBy: {
@@ -25,6 +30,10 @@ export const GET = async (req: NextRequest) => {
 };
 
 export const POST = async (req: NextRequest) => {
+  const token = req.headers.get("Authorization") ?? "";
+  const { error } = await supabase.auth.getUser(token);
+  if (error)
+    return NextResponse.json({ message: error.message }, { status: 400 });
   try {
     const body = await req.json();
     const { name }: CreateCategoryRequestBody = body;
